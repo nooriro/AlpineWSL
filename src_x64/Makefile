@@ -58,5 +58,6 @@ clean:
 	-rm Launcher.exe
 	# -rm icons.zip
 	-rm rootfs.tar.gz
+	-sudo umount rootfs/proc
 	-sudo rm -r rootfs
 	-rm base.tar.gz
