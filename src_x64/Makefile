@@ -56,7 +56,7 @@ clean:
 	-rm ${OUT_ZIP}
 	-rm -r ziproot
 	-rm Launcher.exe
-	-rm icons.zip
+	# -rm icons.zip
 	-rm rootfs.tar.gz
 	-sudo rm -r rootfs
 	-rm base.tar.gz
