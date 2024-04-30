@@ -1,3 +1,7 @@
+VER1=3.19
+VER2=3.19.1
+DATE=240430
+
 OUT_ZIP=Alpine.zip
 LNCR_EXE=Alpine.exe
 
@@ -14,7 +18,7 @@ $(OUT_ZIP): $(ARCH)
 
 x64:
 	cd src_x64 && $(MAKE)
-	mv src_x64/$(OUT_ZIP) ./
+	mv src_x64/$(OUT_ZIP) ./$(basename $(OUT_ZIP))-$(VER2)-$(DATE).zip
 
 arm64:
 	cd src_arm64 && $(MAKE)
