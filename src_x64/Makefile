@@ -150,6 +150,17 @@ rootfs: base.tar.gz profile
 	sudo tar --overwrite -zcpf apkcache.tar.gz -C rootfs/var/cache/apk `sudo ls -tr rootfs/var/cache/apk | grep '\.apk$$'`
 	sudo chown `id -un` apkcache.tar.gz
 	sudo rm -rf `sudo find rootfs/var/cache/apk/ -type f -name '*.apk'`
+	# ---------------------------
+	# Files for cross compilation
+	# ---------------------------
+	sudo mkdir rootfs/var/cross
+	sudo chmod 0755 rootfs/var/cross
+	sudo cp download-extract.sh rm-downloaded.sh rm-extracted.sh rootfs/var/cross/
+	sudo chmod 0744 rootfs/var/cross/download-extract.sh rootfs/var/cross/rm-downloaded.sh rootfs/var/cross/rm-extracted.sh
+	sudo chroot rootfs /var/cross/download-extract.sh
+	# ------------------------------------
+	# End of 'Files for cross compilation'
+	# ------------------------------------
 	sudo rm -f rootfs/etc/resolv.conf
 	sudo chmod +x rootfs
 
