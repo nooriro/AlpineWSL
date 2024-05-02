@@ -1,5 +1,5 @@
 OUT_ZIP=Alpine.zip
-LNCR_EXE=Alpine.exe
+LNCR_EXE=Alpine-3.19.exe
 
 DLR=curl
 DLR_FLAGS=-L
