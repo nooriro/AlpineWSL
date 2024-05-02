@@ -33,7 +33,7 @@ icons.zip:
 rootfs.tar.gz: rootfs
 	@echo -e '\e[1;31mBuilding rootfs.tar.gz...\e[m'
 	cd rootfs; sudo tar -zcpf ../rootfs.tar.gz `sudo ls`
-	sudo chown `id -un` rootfs.tar.gz
+	sudo chown `id -un`:`id -gn` rootfs.tar.gz
 
 rootfs: base.tar.gz profile
 	@echo -e '\e[1;31mBuilding rootfs...\e[m'
@@ -148,7 +148,7 @@ rootfs: base.tar.gz profile
 	sudo chroot rootfs /sbin/apk add bash
 	# sudo chroot rootfs /sbin/apk list --installed
 	sudo tar --overwrite -zcpf apkcache.tar.gz -C rootfs/var/cache/apk `sudo ls -tr rootfs/var/cache/apk | grep '\.apk$$'`
-	sudo chown `id -un` apkcache.tar.gz
+	sudo chown `id -un`:`id -gn` apkcache.tar.gz
 	sudo rm -rf `sudo find rootfs/var/cache/apk/ -type f -name '*.apk'`
 	# ---------------------------
 	# Files for cross compilation
@@ -160,7 +160,7 @@ rootfs: base.tar.gz profile
 	[ -f apkcross.tar.gz ] && sudo tar -zxpf apkcross.tar.gz -C rootfs/var/cross || true
 	sudo chroot rootfs /var/cross/download-extract.sh
 	sudo tar --overwrite -zcpf apkcross.tar.gz -C rootfs/var/cross `for ARCH in armv7 aarch64 x86 x86_64; do sudo ls -tr rootfs/var/cross/$$ARCH | sed -n 's/.*\.apk$$/'$$ARCH'\/&/p'; done`
-	sudo chown `id -un` apkcross.tar.gz
+	sudo chown `id -un`:`id -gn` apkcross.tar.gz
 	yes | sudo chroot rootfs /var/cross/rm-downloaded.sh
 	# ------------------------------------
 	# End of 'Files for cross compilation'
