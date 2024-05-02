@@ -157,7 +157,11 @@ rootfs: base.tar.gz profile
 	sudo chmod 0755 rootfs/var/cross
 	sudo cp download-extract.sh rm-downloaded.sh rm-extracted.sh rootfs/var/cross/
 	sudo chmod 0744 rootfs/var/cross/download-extract.sh rootfs/var/cross/rm-downloaded.sh rootfs/var/cross/rm-extracted.sh
+	[ -f apkcross.tar.gz ] && sudo tar -zxpf apkcross.tar.gz -C rootfs/var/cross || true
 	sudo chroot rootfs /var/cross/download-extract.sh
+	sudo tar --overwrite -zcpf apkcross.tar.gz -C rootfs/var/cross `for ARCH in armv7 aarch64 x86 x86_64; do sudo ls -tr rootfs/var/cross/$$ARCH | sed -n 's/.*\.apk$$/'$$ARCH'\/&/p'; done`
+	sudo chown `id -un` apkcross.tar.gz
+	yes | sudo chroot rootfs /var/cross/rm-downloaded.sh
 	# ------------------------------------
 	# End of 'Files for cross compilation'
 	# ------------------------------------
