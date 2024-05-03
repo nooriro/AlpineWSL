@@ -162,6 +162,10 @@ rootfs: base.tar.gz profile
 	sudo tar --overwrite -zcpf apkcross.tar.gz -C rootfs/var/cross `for ARCH in armv7 aarch64 x86 x86_64; do sudo ls -tr rootfs/var/cross/$$ARCH | sed -n 's/.*\.apk$$/'$$ARCH'\/&/p'; done`
 	sudo chown `id -un`:`id -gn` apkcross.tar.gz
 	yes | sudo chroot rootfs /var/cross/rm-downloaded.sh
+	# Add symlink to /var/cross by default in each user's home directory, whenever a user account is created
+	sudo chroot rootfs mkdir -p /etc/skel
+	sudo chroot rootfs ln -s /var/cross /etc/skel/cross
+	sudo chroot rootfs ln -s /var/cross /root/cross
 	# ------------------------------------
 	# End of 'Files for cross compilation'
 	# ------------------------------------
