@@ -19,6 +19,7 @@ ziproot: Launcher.exe rootfs.tar.gz
 	mkdir ziproot
 	cp Launcher.exe ziproot/${LNCR_EXE}
 	cp rootfs.tar.gz ziproot/
+	cp shell_link.ps1 create-shortcut.cmd delete-shortcut.cmd ziproot/
 
 exe: Launcher.exe
 Launcher.exe: icons.zip
