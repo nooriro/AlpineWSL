@@ -7,6 +7,11 @@ BASE_URL=https://dl-cdn.alpinelinux.org/alpine/v3.19/releases/x86_64/alpine-mini
 LNCR_ZIP_URL=https://github.com/yuk7/wsldl/releases/download/23072600/icons.zip
 LNCR_ZIP_EXE=Alpine.exe
 
+SHORTCUT_URL=https://github.com/nooriro/alpine-wsl-shortcut/archive/refs/tags/1.0.0.zip
+SHORTCUT_FILES=shell_link.ps1 create-shortcut.cmd delete-shortcut.cmd
+VARCROSS_URL=https://github.com/nooriro/alpine-wsl-varcross/archive/refs/tags/1.0.0.zip
+VARCROSS_FILES=download-extract.sh rm-downloaded.sh rm-extracted.sh
+
 all: $(OUT_ZIP)
 
 zip: $(OUT_ZIP)
@@ -14,12 +19,12 @@ $(OUT_ZIP): ziproot
 	@echo -e '\e[1;31mBuilding $(OUT_ZIP)\e[m'
 	cd ziproot; bsdtar -a -cf ../$(OUT_ZIP) *
 
-ziproot: Launcher.exe rootfs.tar.gz
+ziproot: Launcher.exe rootfs.tar.gz shortcut
 	@echo -e '\e[1;31mBuilding ziproot...\e[m'
 	mkdir ziproot
-	cp Launcher.exe ziproot/${LNCR_EXE}
-	cp rootfs.tar.gz ziproot/
-	cp shell_link.ps1 create-shortcut.cmd delete-shortcut.cmd ziproot/
+	cp -p Launcher.exe ziproot/${LNCR_EXE}
+	cp -p rootfs.tar.gz ziproot/
+	cp -p `for FILE in $(SHORTCUT_FILES); do echo shortcut/$$FILE; done` ziproot/
 
 exe: Launcher.exe
 Launcher.exe: icons.zip
@@ -27,16 +32,34 @@ Launcher.exe: icons.zip
 	bsdtar -xvf icons.zip $(LNCR_ZIP_EXE)
 	mv $(LNCR_ZIP_EXE) Launcher.exe
 
+shortcut: shortcut.zip
+	@echo -e '\e[1;31mExtracting files from shortcut.zip...\e[m'
+	mkdir shortcut
+	bsdtar -xvf shortcut.zip --strip-components=1 -C shortcut
+
+varcross: varcross.zip
+	@echo -e '\e[1;31mExtracting files from varcross.zip...\e[m'
+	sudo mkdir varcross
+	sudo bsdtar -xvf varcross.zip --strip-components=1 -C varcross
+
 icons.zip:
 	@echo -e '\e[1;31mDownloading icons.zip...\e[m'
 	$(DLR) $(DLR_FLAGS) $(LNCR_ZIP_URL) -o icons.zip
+
+shortcut.zip:
+	@echo -e '\e[1;31mDownloading shortcut.zip...\e[m'
+	$(DLR) $(DLR_FLAGS) $(SHORTCUT_URL) -o shortcut.zip
+
+varcross.zip:
+	@echo -e '\e[1;31mDownloading varcross.zip...\e[m'
+	$(DLR) $(DLR_FLAGS) $(VARCROSS_URL) -o varcross.zip
 
 rootfs.tar.gz: rootfs
 	@echo -e '\e[1;31mBuilding rootfs.tar.gz...\e[m'
 	cd rootfs; sudo tar -zcpf ../rootfs.tar.gz `sudo ls`
 	sudo chown `id -un`:`id -gn` rootfs.tar.gz
 
-rootfs: base.tar.gz profile
+rootfs: base.tar.gz profile varcross
 	@echo -e '\e[1;31mBuilding rootfs...\e[m'
 	mkdir rootfs
 	sudo tar -zxpf base.tar.gz -C rootfs
@@ -149,6 +172,7 @@ rootfs: base.tar.gz profile
 	sudo chroot rootfs /sbin/apk add bash
 	# sudo chroot rootfs /sbin/apk list --installed
 	sudo tar --overwrite -zcpf apkcache.tar.gz -C rootfs/var/cache/apk `sudo ls -tr rootfs/var/cache/apk | grep '\.apk$$'`
+	sudo chmod 0644 apkcache.tar.gz
 	sudo chown `id -un`:`id -gn` apkcache.tar.gz
 	sudo rm -rf `sudo find rootfs/var/cache/apk/ -type f -name '*.apk'`
 	# ---------------------------
@@ -156,11 +180,12 @@ rootfs: base.tar.gz profile
 	# ---------------------------
 	sudo mkdir rootfs/var/cross
 	sudo chmod 0755 rootfs/var/cross
-	sudo cp download-extract.sh rm-downloaded.sh rm-extracted.sh rootfs/var/cross/
-	sudo chmod 0744 rootfs/var/cross/download-extract.sh rootfs/var/cross/rm-downloaded.sh rootfs/var/cross/rm-extracted.sh
+	sudo cp -p `for FILE in $(VARCROSS_FILES); do echo varcross/$$FILE; done` rootfs/var/cross/
+	sudo chmod 0744 `for FILE in $(VARCROSS_FILES); do echo rootfs/var/cross/$$FILE; done`
 	[ -f apkcross.tar.gz ] && sudo tar -zxpf apkcross.tar.gz -C rootfs/var/cross || true
 	sudo chroot rootfs /var/cross/download-extract.sh
 	sudo tar --overwrite -zcpf apkcross.tar.gz -C rootfs/var/cross `for ARCH in armv7 aarch64 x86 x86_64; do sudo ls -tr rootfs/var/cross/$$ARCH | sed -n 's/.*\.apk$$/'$$ARCH'\/&/p'; done`
+	sudo chmod 0644 apkcross.tar.gz
 	sudo chown `id -un`:`id -gn` apkcross.tar.gz
 	yes | sudo chroot rootfs /var/cross/rm-downloaded.sh
 	# Add symlink to /var/cross by default in each user's home directory, whenever a user account is created
@@ -182,8 +207,9 @@ clean:
 	-rm ${OUT_ZIP}
 	-rm -r ziproot
 	-rm Launcher.exe
-	# -rm icons.zip
 	-rm rootfs.tar.gz
+	-rm -r shortcut
+	-sudo rm -r varcross
 	-sudo umount rootfs/proc
 	-sudo rm -r rootfs
 	-rm base.tar.gz

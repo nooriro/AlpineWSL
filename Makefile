@@ -19,8 +19,8 @@ $(OUT_ZIP): $(ARCH)
 x64:
 	cd src_x64 && $(MAKE)
 	mv src_x64/$(OUT_ZIP) ./$(basename $(OUT_ZIP))-$(VER2)-$(DATE).zip
-	cp src_x64/apkcache.tar.gz ./apkcache-$(VER2)-$(DATE).tar.gz
-	cp src_x64/apkcross.tar.gz ./apkcross-$(VER2)-$(DATE).tar.gz
+	cp -p src_x64/apkcache.tar.gz ./apkcache-$(VER2)-$(DATE).tar.gz
+	cp -p src_x64/apkcross.tar.gz ./apkcross-$(VER2)-$(DATE).tar.gz
 
 arm64:
 	cd src_arm64 && $(MAKE)
