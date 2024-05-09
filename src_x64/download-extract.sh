@@ -184,7 +184,7 @@ for ARCH in $ARCHES; do
         else
             LIST0=""  # Extract all files
         fi
-        tar xzf "$ARCH/$APK" $LIST0 -C "$ARCH" 2>/dev/null && echo || { echo "  [FAILED]"; RET="1"; }
+        tar xzpf "$ARCH/$APK" $LIST0 -C "$ARCH" 2>/dev/null && echo || { echo "  [FAILED]"; RET="1"; }
     done
     rm -f $ARCH/.PKGINFO
     rm -f $ARCH/.SIGN.RSA.alpine-devel@lists.alpinelinux.org-????????.rsa.pub
