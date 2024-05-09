@@ -9,10 +9,9 @@
 )
 Set-Location $PSScriptRoot
 
-# REGEX (to be applied to BaseName of *.exe files)
-$regex = @()
-foreach ($r in $Replaces) {$regex += $r[0]}
-$regex = $regex -join '|'
+# REGEX (to be applied to the `BaseName`s of *.exe files)
+# See: https://vexx32.github.io/2020/02/15/Building-Arrays-Collections/#using-the-pipeline
+$regex = $(foreach ($r in $Replaces) {$r[0]}) -join '|'
 
 # TARGET
 $file = Get-ChildItem *.exe `
