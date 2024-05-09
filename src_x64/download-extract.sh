@@ -179,11 +179,12 @@ for ARCH in $ARCHES; do
         echo -n "Extracting $ARCH/$APK"
         if [ "${APK:0:4}" = "gcc-" ]; then
             echo -n " (only 'libgcc.a')"
-            LIBGCC_A="$(tar xvzf "$ARCH/$APK" "usr/lib/gcc/*/*/libgcc.a" -C "$ARCH" 2>/dev/null)"
-            [ -n "$LIBGCC_A" ] && echo || { echo "  [FAILED]"; RET="1"; }
+            LIST0="$(tar tzf "$ARCH/$APK" 2>/dev/null | grep '^usr/lib/gcc/[^/]\+/[^/]\+/libgcc.a$')"
+            [ -n "$LIST0" ] || { echo "  [FAILED]"; RET="1"; continue; }
         else
-            tar xzf "$ARCH/$APK" -C "$ARCH" 2>/dev/null && echo || { echo "  [FAILED]"; RET="1"; }
+            LIST0=""  # Extract all files
         fi
+        tar xzf "$ARCH/$APK" $LIST0 -C "$ARCH" 2>/dev/null && echo || { echo "  [FAILED]"; RET="1"; }
     done
     rm -f $ARCH/.PKGINFO
     rm -f $ARCH/.SIGN.RSA.alpine-devel@lists.alpinelinux.org-????????.rsa.pub
