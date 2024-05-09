@@ -4,3 +4,4 @@
 @set "PSModulePath=%ProgramFiles%\WindowsPowerShell\Modules;%SystemRoot%\system32\WindowsPowerShell\v1.0\Modules"
 @powershell -ex bypass -f "%~dp0shell_link.ps1"
 @endlocal
+@exit /b %ERRORLEVEL%
