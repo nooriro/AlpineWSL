@@ -2,8 +2,8 @@ export CHARSET=UTF-8
 export LANG=C.UTF-8
 export PAGER=less
 export PS1='\h:\w\$ '
-export CC='clang -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind -ffunction-sections -fdata-sections -flto'
-export CXX='clang++ -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind -ffunction-sections -fdata-sections -flto -stdlib=libc++ -lc++abi'
+export CC='clang -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind -ffunction-sections -fdata-sections'
+export CXX='clang++ -fuse-ld=lld -rtlib=compiler-rt -unwindlib=libunwind -ffunction-sections -fdata-sections -stdlib=libc++ -lc++abi'
 umask 022
 cd ~
 
