@@ -1,8 +1,8 @@
 ﻿param (
     $Replaces = @(
-        @('^Alpine$', 'Alpine'),
+        @('^Alpine', 'Alpine'),
         @('^Alpine-', 'Alpine '),
-        @('^Ubuntu$', 'Ubuntu'),
+        @('^Ubuntu', 'Ubuntu'),
         @('^Ubuntu(\d{2})(\d{2})$', 'Ubuntu $1.$2')
     ),
     [switch] $Delete
